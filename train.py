@@ -9,7 +9,7 @@ from preprocess import load_and_format
 dataset = load_and_format()
 
 # Load tokenizer & model
-model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+model_id = "fiveflow/KoLlama-3-8B-Instruct"
 tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = "right"
@@ -35,15 +35,18 @@ model = get_peft_model(model, peft_config)
 
 # Tokenize
 def tokenize(example):
-    return tokenizer(example["text"], padding="max_length", truncation=True, max_length=512)
+    tokenized = tokenizer(example["text"], padding="max_length", truncation=True, max_length=512)
+    tokenized["labels"] = tokenized["input_ids"].copy()
+    return tokenized
 
 tokenized_dataset = dataset.map(tokenize, batched=True)
+
 
 # TrainingArguments
 args = TrainingArguments(
     output_dir="./checkpoints",
-    per_device_train_batch_size=2,
-    gradient_accumulation_steps=4,
+    per_device_train_batch_size=8,
+    gradient_accumulation_steps=2,
     num_train_epochs=3,
     learning_rate=2e-4,
     fp16=True,

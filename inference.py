@@ -4,7 +4,7 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
-base_model = "meta-llama/Meta-Llama-3-8B-Instruct"
+base_model = "fiveflow/KoLlama-3-8B-Instruct"
 tokenizer = AutoTokenizer.from_pretrained(base_model)
 
 model = AutoModelForCausalLM.from_pretrained(
